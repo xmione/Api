@@ -3,6 +3,22 @@
   
     cd /repo/Api/Api
 
+
+    Build-Run-And-Deploy-Kubernetes
+    
+    Delete-Existing-SQL-Deployment accsol-sqlserver
+
+    
+    kubectl create secret generic mssql --from-literal=SA_PASSWORD=P@ssw0rd123
+    kubectl apply -f sql.yaml
+    Get-Deployment-info $true $false
+    kubectl describe pod mssql-pod 
+    kubectl logs mssql-pod
+
+    kubectl delete deployment mssql-deployment 
+    kubectl delete service mssql-service 
+    kubectl delete pod mssql-pod 
+
     kubectl apply -f api.cluster.yaml
     kubectl apply -f api.yaml
     kubectl apply -f api.node.yaml
@@ -14,12 +30,15 @@
 
     kubectl describe service api-service
 
+    kubectl delete pod accsol-sqlserver-0
     
+    kubectl delete statefulset accsol-sqlserver
+
 
     kubectl delete deployment api-deployment
     kubectl delete service api-service
 
-    kubectl describe pod api-deployment-55dcd86d7-tbzr4 
+    kubectl describe pod accsol-sqlserver-0 
 
     kubectl logs api-deployment-55dcd86d7-tbzr4 -c api
 
