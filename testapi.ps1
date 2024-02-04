@@ -83,5 +83,10 @@
 
     docker ps --filter "reference=901a79a9b62a"
 
-    
+    $ScriptDir = $PSCommandPath
+    Write-Output "The current script path is: $ScriptDir"
+     
   #>
+$scriptDir = $PSCommandPath
+Write-Output "The current script path is: $scriptDir"
+

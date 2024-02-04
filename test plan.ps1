@@ -12,8 +12,6 @@
 ===============================================================================================================#>
 
 function Build-And-Run-Api{
-    cd ..
-
     docker stop api
     docker rm api
     docker rmi api
@@ -22,8 +20,6 @@ function Build-And-Run-Api{
 
     Log "Browse API Page in Microsoft Edge"
     Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList "http://localhost:5555/swagger/index.html"
-
-    cd Api
 }   
 
 function Update-Dockerhub{
@@ -42,8 +38,6 @@ function Update-Dockerhub{
 } 
 
 function Pull-And-Run-Dockerhub{
-    cd ..
-
     docker stop api
     docker rm api
     docker rmi api
@@ -52,13 +46,10 @@ function Pull-And-Run-Dockerhub{
 
     Log "Browse API Page in Microsoft Edge"
     Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList "http://localhost:5555/swagger/index.html"
-
-    cd Api
 }
 
 function Build-Run-And-Deploy-Kubernetes-Api{
-    cd /repo/Api/Api
-
+    cd Api
     kubectl apply -f api.cluster.yaml
     kubectl apply -f api.yaml
     kubectl apply -f api.node.yaml
@@ -69,18 +60,44 @@ function Build-Run-And-Deploy-Kubernetes-Api{
     kubectl get pods
 
     kubectl describe service api-service
+    cd ..
 }
 
+function Delete-Api-Deployment{
+    kubectl delete deployment api-deployment
+    kubectl delete service api-service
+    kubectl delete service api-clusterip-srv
+}
+
+    # Important: Always change directory to the location of the getImports.ps1 script file
+    Set-ExecutionPolicy Unrestricted -Scope CurrentUser -Force
+    $scriptPath = Split-Path -parent $MyInvocation.MyCommand.Path
+    cd $scriptPath
+        
     Log "1. Build, run and test web api in both http/https protocol. Just run Api project in Visual Studio by pressing F5."
+
+    dotnet build "./API/API.csproj" -c Release 
+    cd ./Api/bin/Release/net8.0/
+    
+    $curDir = Get-Location
+
+    $env:ASPNETCORE_URLS="http://localhost:7167"
+    Start-Process cmd -ArgumentList "/k dotnet API.dll" -Verb RunAs -WorkingDirectory $curDir  
+
+    Log "Browse API Page in Microsoft Edge"
+    Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList "http://localhost:7167/swagger/index.html"
     Log "2. Test in browser if it displays."
     Pause
-
+    
     Log "3. Build and run docker containers."
+    # go back to app root path
+    cd $scriptPath
     Build-And-Run-Api
     Log "4. Test in browser if it displays."
     Pause
 
     Log "5. Update repo in Dockerhub."
+    cd $scriptPath
     Update-Dockerhub
     Pause
 
@@ -90,6 +107,11 @@ function Build-Run-And-Deploy-Kubernetes-Api{
     Pause
 
     Log "8. Build, run and deploy Api to kubernetes."
+    cd $scriptPath
     Build-Run-And-Deploy-Kubernetes-Api
     Log "9. Test in browser if it displays."
+    Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList "http://localhost:30011/swagger/index.html"
     Pause
+
+    Log "10. Delete Api Deployment."
+    Delete-Api-Deployment
