@@ -11,3 +11,5 @@ spec:
     targetPort: 8080
     nodePort: 30011  # this will expose the service on your host 
   type: NodePort
+  externalIPs:
+   - 192.168.1.101

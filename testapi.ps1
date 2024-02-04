@@ -19,6 +19,9 @@
     kubectl delete service mssql-service 
     kubectl delete pod mssql-pod 
 
+     
+    cd /repo/Api/Api
+
     kubectl apply -f api.cluster.yaml
     kubectl apply -f api.yaml
     kubectl apply -f api.node.yaml
@@ -29,14 +32,17 @@
     kubectl get pods
 
     kubectl describe service api-service
+    
+    kubectl delete deployment api-deployment
+    kubectl delete service api-service
+    kubectl delete service api-clusterip-srv
+
+
 
     kubectl delete pod accsol-sqlserver-0
-    
     kubectl delete statefulset accsol-sqlserver
 
 
-    kubectl delete deployment api-deployment
-    kubectl delete service api-service
 
     kubectl describe pod accsol-sqlserver-0 
 
