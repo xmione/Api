@@ -81,11 +81,25 @@ function Delete-Api-Deployment{
     
     $curDir = Get-Location
 
-    $env:ASPNETCORE_URLS="http://localhost:7167"
+    $httpDomain = "http://localhost"
+    $httpPort="5046"
+    $httpsDomain = "https://localhost"
+    $httpsPort="7167"
+    $httpUrl = "${httpDomain}:${httpPort}/swagger/index.html"
+    $httpsUrl = "${httpsDomain}:${httpsPort}/swagger/index.html"
+
+    #$env:ASPNETCORE_URLS="http://localhost:6000"
+    $env:ASPNETCORE_URLS="${httpDomain}:${httpPort};${httpsDomain}:${httpsPort}"
     Start-Process cmd -ArgumentList "/k dotnet API.dll" -Verb RunAs -WorkingDirectory $curDir  
 
-    Log "Browse API Page in Microsoft Edge"
-    Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList "http://localhost:7167/swagger/index.html"
+    Log "Browse API Https Page in Microsoft Edge"
+    Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList $httpsUrl 
+
+    Log "Browse API Http Page in Microsoft Edge"
+    Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList $httpUrl 
+     
+    
+
     Log "2. Test in browser if it displays."
     Pause
     
